@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<script src="http://jndroid.com/jndroid-1.1.6.js"></script>
+</head>
+<body>
+<script>
+	if (window.innerHeight < 10) {
+		window.innerHeight = 600;
+		document.body.style.height = "600px";
+	}
+
+
+	var isPhone = (window.innerWidth < 720);
+
+	var PCPhoneChecker = new _PCPhoneChecker();
+	function _PCPhoneChecker() {
+		var observers = [];
+
+		this.addObserver = function(o) {
+			observers.push(o);
+			fire(o);
+		};
+
+		this.update = function() {
+			var p = (window.innerWidth < 720);
+			if (p != isPhone) {
+				isPhone = p;
+				for (var i = 0; i < observers.length; i++) {
+					var o = observers[i];
+					fire(o);
+				}
+			}
+		};
+
+		function fire(o) {
+			if (isPhone) {
+				o.changeToPhone();
+			} else {
+				o.changeToPC();
+			}
+		}
+	}
+</script>
+<script>
+	
+	var rootView = new FrameLayout();
+	setContentView(rootView);
+	
+	var mainView = new MainView();
+	rootView.addView(mainView);
+	
+	function MainView() {
+		FrameLayout.apply(this);
+		
+		this.bg(0x00000000);
+		
+		var scrollView = new ScrollView().addTo(this);
+		scrollView.addScrollChangedListener(function(x, oldX, y, oldY) {
+			if (y > 300) {
+				banner.show();
+			} else {
+				banner.hide();
+			}
+		});
+		var layout = new LinearLayout().addTo(scrollView);
+		
+		new LogoView().addTo(layout);
+		new PageOne().addTo(layout);
+		new PageTwo().addTo(layout);
+		new PageThree().addTo(layout);
+		new FooterView().addTo(layout);
+		
+		var lp = new LP(LP.FP, LP.FP);
+		lp.gravity = Gravity.BOTTOM;
+		var banner = new Banner().toGone().addTo(this, lp);
+
+		var superOnMeasure = this.onMeasure;
+		this.onMeasure = function(wMS, hMS) {
+			superOnMeasure.call(this, wMS, hMS);
+
+			PCPhoneChecker.update();
+		};
+	}
+	
+	function LogoView() {
+		ViewGroup.apply(this);
+		
+		var logo = new ImageView().uri("img/logo.svg").imgWidth(120).addTo(this);
+		var about = new TextView().gravity(Gravity.CENTER).text("关于我们").toGone().click(function() {
+
+		}).addTo(this);
+
+
+		this.changeToPC = function() {
+			about.toVisible();
+		};
+
+		this.changeToPhone = function() {
+			about.toGone();
+		};
+
+		PCPhoneChecker.addObserver(this);
+		
+		this.onMeasure = function(wMS) {
+			var w = MS.getSize(wMS);
+			var h = 80;
+			
+			logo.measure(120, 48);
+			about.measureExactly(96, h);
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			if (isPhone) {
+				logo.layoutAtCenter();
+			} else {
+				logo.layout(32, (this.mh() - logo.mh()) / 2);
+			}
+			about.layout(this.mw() - about.mw(), 0);
+		};
+	}
+	
+	function PageOne() {
+		ViewGroup.apply(this);
+		
+		this.div.style.background = "linear-gradient(146deg, #8587ff, #6e72ff)";
+		
+		var title = new TextView().text("因评论而相遇").size(32).color(0xffffffff).addTo(this);
+		var subTitle = new TextView().text("光看评论哪够？聊天撩起来！").size(14).color(0xffffffff).addTo(this);
+		var downloadBtn = new TextView().text("下载").corner(20).bg(0xffffcc00).gravity(Gravity.CENTER).click(function() {
+			download();
+		}).addTo(this);
+		var img = new ImageView().uri("img/machine.png").scaleType(ScaleType.CENTER_INSIDE).addTo(this);
+		
+		this.onMeasure = function(wMS) {
+			var w = MS.getSize(wMS);
+			var h = 500;
+		
+			title.measure(244, 80);
+			subTitle.measure(244, 80);
+			downloadBtn.measureExactly(108, 40);
+			img.measure(360, 226);
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			title.layout((this.mw() - title.mw()) / 2, 48);
+			subTitle.layout((this.mw() - subTitle.mw()) / 2, 88);
+			downloadBtn.layout((this.mw() - downloadBtn.mw()) / 2, 148);
+			img.layout((this.mw() - img.mw()) / 2, this.mh() - img.mh());
+		};
+	}
+	
+	function PageTwo() {
+		ViewGroup.apply(this);
+		
+		this.bg(0xffffffff);
+		
+		var title = new TextView().text("用最自然的方式刷刷刷").size(32).addTo(this);
+		var subTitle = new TextView().text("「聊天体」才是年轻人刷资讯的正确姿势！").size(18).addTo(this);
+		
+		var img = new ImageView().uri("img/bitmap@2x.jpg").scaleType(ScaleType.CENTER_INSIDE).addTo(this);
+		var rect = new RectLayout().addTo(this);
+		
+		addBubble("img/bubble-1.svg", 36, 24);
+		addBubble("img/bubble-2.svg", 128, 0);
+		addBubble("img/bubble-3.svg", 236, 24);
+		addBubble("img/bubble-4.svg", 48, 76);
+		addBubble("img/bubble-5.svg", 136, 48);
+		addBubble("img/bubble-6.svg", 236, 86);
+		addBubble("img/bubble-7.svg", 148, 96);
+
+		function addBubble(icon, x, y) {
+			var img = new ImageView().uri(icon);
+			rect.addView(img, x, y, x + 96, y + 64);
+		}
+		
+		this.onMeasure = function(wMS) {
+			var w = MS.getSize(wMS);
+			var h = 500;
+			
+			title.measure(244, 80);
+			subTitle.measure(244, 80);
+			img.measure(360, 226);
+			rect.measure(360, 360);
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			title.layout((this.mw() - title.mw()) / 2, 48);
+			subTitle.layout((this.mw() - subTitle.mw()) / 2, 100);
+			img.layout((this.mw() - img.mw()) / 2, this.mh() - img.mh());
+			rect.layout((this.mw() - rect.mw()) / 2, this.mh() - rect.mh());
+		};
+	}
+	
+	function PageThree() {
+		ViewGroup.apply(this);
+		
+		this.bg(0xff2d5280);
+			
+		var title = new TextView().text("用聊天的方式参与热门").size(32).color(0xffffffff).addTo(this);
+		var subTitle = new TextView().text("评论算什么，「聊天」才够表达呀～").size(18).color(0xffffffff).addTo(this);
+		
+		var img = new ImageView().uri("img/bitmap@2x.png").scaleType(ScaleType.CENTER_INSIDE).addTo(this);
+		
+		var rect = new RectLayout().addTo(this);
+		
+		addBubble("img/group-27-copy.svg", 220, 24);
+		addBubble("img/group-27-copy-2.svg", 128, 0);
+		addBubble("img/group-27-copy-3.svg", 36, 24);
+		addBubble("img/group-27-copy-4.svg", 48, 76);
+		addBubble("img/group-27-copy-5.svg", 136, 58);
+		addBubble("img/group-27-copy-6.svg", 148, 108);
+		addBubble("img/group-29.svg", 236, 86);
+
+		function addBubble(icon, x, y) {
+			var img = new ImageView().uri(icon);
+			rect.addView(img, x, y, x + 96, y + 64);
+		}
+		
+		this.onMeasure = function(wMS) {
+			var w = MS.getSize(wMS);
+			var h = 500;
+			
+			title.measure(244, 80);
+			subTitle.measure(244, 80);
+			img.measure(360, 226);
+			rect.measure(360, 360);
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			title.layout((this.mw() - title.mw()) / 2, 48);
+			subTitle.layout((this.mw() - subTitle.mw()) / 2, 100);
+			
+			img.layout((this.mw() - img.mw()) / 2, this.mh() - img.mh());
+			rect.layout((this.mw() - rect.mw()) / 2, this.mh() - rect.mh());
+		};
+	}
+	
+	function FooterView() {
+		ViewGroup.apply(this);
+		
+		var text = new TextView().text("© 上海挖数互联网科技有限公司 2018. All Rights Reserved.</br>沪ICP备16023120号-1")
+			.size(12).color(0xff424242).addTo(this);
+			
+		text.div.style.textAlign = "center";
+		text.lineHeight(24);
+		
+		this.onMeasure = function(wMS) {
+			var w = MS.getSize(wMS);
+			var h = 160;
+			
+			text.measure();
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			text.layout((this.mw() - text.mw()) / 2, 32);
+		};
+	}
+	
+	function Banner() {
+    	ViewGroup.apply(this);
+
+    	var self = this;
+		var isShow = false;
+		var inShowing = false;
+
+    	this.bg(0xfff8f8f8);
+
+    	var icon = new ImageView().scaleType(ScaleType.CENTER_INSIDE).cornerSize(8)
+    	    .bg(0x33000000).imageUri("img/rectangle-5.jpg").addTo(this);
+
+    	var name = new TextView().text("聊点公测版").textColor(0xff888888).textSize(14)
+        	.addTo(this);
+    	var desc = new TextView().text("可以聊天的资讯").textColor(0xffa9a9a9).textSize(12)
+        	.style("webkitTransform", "scale(0.8)").addTo(this);
+
+    	var downloadBtn = new TextView().text("立即下载").bg(0xff6e72ff).cornerSize(6)
+        	.textSize(12).textColor(0xffffffff).gravity(Gravity.CENTER).click(function() {
+				download();
+			}).addTo(this);
+
+    	this.onMeasure = function(wMS, hMS) {
+        	var w = MS.getSize(wMS);
+        	var h = 64;
+
+        	icon.measureExactly(40, 40);
+        	name.measure(0, 0);
+        	desc.measure(0, 0);
+        	downloadBtn.measureExactly(80, 29);
+        
+        	this.setMD(w, h);
+    	};
+
+    	this.onLayout = function() {
+        	var cntW = 360;
+        	var dx = (this.mw() - cntW) / 2;
+        	var x = dx + 40;
+        	var y = 12;
+        	icon.layout(x, y);
+
+        	x = dx + 90;
+        	name.layout(x, 15);
+        	desc.layout(x - 8, 36);
+
+        	x = dx + cntW - downloadBtn.mw() - 50;
+        	y = (this.mh() - downloadBtn.mh()) / 2;
+        	downloadBtn.layout(x, y);
+    	};
+		
+		this.show = function() {
+			if (isShow) {
+				return;
+			}
+			isShow = true;
+			this.toVisible();
+			this.requestLayout();
+			this.clearAnimation();
+			new AlphaAnimation(0, 1).duration(500).view(this).setAnimationEndListener(function() {
+				inShowing = false;
+			}).start();
+			inShowing = true;
+		};
+		
+		this.hide = function() {
+			if (!isShow) {
+				return;
+			}
+			isShow = false;
+			this.clearAnimation();
+			new AlphaAnimation(1, 0).duration(500).view(this).setAnimationEndListener(function() {
+				if (!inShowing) {
+					self.toGone();
+				}
+			}).start();
+		};
+	}
+	
+	function RectLayout() {
+		ViewGroup.apply(this);
+		
+		var superAddView = this.addView;
+		this.addView = function(v, l, t, r, b) {
+			superAddView.call(this, v);
+			
+			var w = r - l;
+			var h = b - t;
+			var lp = new LP(w, h);
+			lp.leftMargin = l;
+			lp.topMargin = t;
+			v.lp(lp);
+		};
+		
+		this.onMeasure = function(wMS, hMS) {
+			var w = MS.getSize(wMS);
+			var h = MS.getSize(hMS);
+			
+			this.forEachChild(function(c) {
+				var clp = c.lp();
+				c.measureExactly(clp.width, clp.height);
+			});
+			
+			this.setMD(w, h);
+		};
+		
+		this.onLayout = function() {
+			this.forEachChild(function(c) {
+				var clp = c.lp();
+				c.layout(clp.leftMargin, clp.topMargin);
+			});
+		};
+	}
+	
+	function is_weixin() {
+    	var ua = navigator.userAgent.toLowerCase();
+    	return (ua.match(/MicroMessenger/i) == "micromessenger");
+    }
+	
+	var downloadUrl = "";
+	
+	getDownloadUrl();
+	function getDownloadUrl() {
+		var request = Utils.request();
+        var type = request.type;
+        liteAjax("http://chatbot.api.talkmoment.com/versions/get/all", function (d) {
+			var arr = JSON.parse(d).result;
+            var map = {};
+            for (var index = 0; index < arr.length; index++) {
+                var item = arr[index];
+                map[item.channel] = item.download_url;
+            }
+            URL = map[type];
+            if (URL == undefined) {
+                URL = map["base"];
+            }
+			downloadUrl = URL;
+        });
+	}
+	
+	function download() {
+		if (browser.ios) {
+    		alert("ios版本敬请期待哟！");
+        } else {
+			if (is_weixin()) {
+                alert("微信中无法直接点击下载，请点击界面右上角，在浏览器中访问。");
+            } else {
+				if (!downloadUrl) {
+					setTimeout(function() {
+						download();
+					}, 100);
+					return;
+				}
+				var a = document.createElement("a");
+				a.href = downloadUrl;
+				a.click();
+            }
+        }
+
+	}
+</script>
+</body>
+</html>
+	

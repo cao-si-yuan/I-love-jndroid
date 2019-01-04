@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="38" viewBox="0 0 64 38">
+    <defs>
+        <path id="a" d="M0 0h16.697A8.401 8.401 0 0 1 0 0z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <path fill="#FFF" d="M16.613.139h30.7c8.836 0 16 7.163 16 16v5.155c0 8.837-7.164 16-16 16h-38.7a8 8 0 0 1-8-8V16.139c0-8.837 7.164-16 16-16z"/>
+        <g transform="translate(19.99 6.743)">
+            <circle cx="12" cy="12" r="12" fill="#FFDA6A"/>
+            <path fill="#000" fill-rule="nonzero" d="M4.828 7.144a.533.533 0 1 1 .477-.954L8.24 7.656a.533.533 0 0 1 0 .954l-2.934 1.467a.533.533 0 1 1-.477-.954l2.934-1.467v.954L4.828 7.144zm14.134-.954a.533.533 0 1 1 .477.954L16.505 8.61v-.954l2.934 1.467a.533.533 0 0 1-.477.954L16.028 8.61a.533.533 0 0 1 0-.954l2.934-1.466z"/>
+            <g transform="translate(3.733 12.267)">
+                <mask id="b" fill="#fff">
+                    <use xlink:href="#a"/>
+                </mask>
+                <use fill="#000" xlink:href="#a"/>
+                <ellipse cx="8.4" cy="7.333" fill="#F55065" mask="url(#b)" rx="10.267" ry="5.2"/>
+            </g>
+        </g>
+    </g>
+</svg>

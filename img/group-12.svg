@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="238" height="54" viewBox="0 0 238 54">
+    <g fill="#FFF" fill-rule="evenodd">
+        <text font-family="PingFangSC-Semibold, PingFang SC" font-size="24" font-weight="500" transform="translate(0 -5)">
+            <tspan x="0" y="25">用聊天的方式参与热门</tspan>
+        </text>
+        <text font-family="PingFangSC-Regular, PingFang SC" font-size="14" transform="translate(0 -5)">
+            <tspan x="8" y="57">评论算什么。「聊天」才够表达呀～</tspan>
+        </text>
+    </g>
+</svg>
